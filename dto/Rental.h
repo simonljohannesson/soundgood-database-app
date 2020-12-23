@@ -25,6 +25,8 @@ public:
 
     const std::string &getReturnDate() const;
 
+    friend std::ostream &operator<<(std::ostream &strm, const Rental &obj);
+
 private:
     int student_id;
     int rental_instrument_id;

@@ -44,12 +44,14 @@ int RentalInstrument::getMaxLeaseInDays() const {
 }
 
 std::ostream &operator<<(std::ostream &strm, const RentalInstrument &obj) {
-    strm << "id: "                  << obj.id << "\t";
-    strm << "instrument_id: "       << obj.instrument_id << "\t";
-    strm << "brand: "               << obj.brand << "\t";
-    strm << "instrument_type: "     << obj.instrument_type << "\t";
-    strm << "monthly_fee: "         << obj.monthly_fee << "\t";
-    strm << "max_lease_in_days: "   << obj.max_lease_in_days << "\t";
+    strm << "id: "                      << obj.id << "\t";
+    strm << "instrument_id: "           << obj.instrument_id << "\t";
+    strm << "brand: "                   << obj.brand << "\t";
+    strm << "instrument_type: "         << obj.instrument_type << "\t";
+    strm << "monthly_fee: "             << obj.monthly_fee << "\t";
+    strm << "max_lease_in_days: "       << obj.max_lease_in_days << "\t";
     return strm;
 }
+
+
 } // namespace

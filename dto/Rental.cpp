@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Rental.h"
 
 namespace dto {
@@ -34,6 +35,14 @@ const std::string &Rental::getStartDate() const {
 
 const std::string &Rental::getReturnDate() const {
     return return_date;
+}
+
+std::ostream &operator<<(std::ostream &strm, const Rental &obj){
+    strm << "id: "                      << obj.id << "\t";
+    strm << "student_id: "              << obj.student_id << "\t";
+    strm << "rental_instrument_id: "    << obj.rental_instrument_id << "\t";
+    strm << "start_date: "              << obj.start_date << "\t";
+    strm << "return_date: "             << obj.return_date << "\t";
 }
 
 } // namespace

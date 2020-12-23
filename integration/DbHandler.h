@@ -6,6 +6,7 @@
 #include <pqxx/pqxx>
 
 #include "../dto/RentalInstrument.h"
+#include "../dto/Rental.h"
 
 namespace integration {
 
@@ -19,13 +20,20 @@ private:
     std::string database_connection_config;
     pqxx::connection connection;
     void PrepareRequestAvailableRentalInstrument();
+    void PrepareGetStudentsActiveRentals();
+    void PrepareRentalInstrumentIsAvailable();
 public:
     explicit DbHandler(const std::string & database_connection_config);
 
     std::vector<dto::RentalInstrument> RequestAvailableRentalInstruments(
             const std::string &instrument_type);
 
+    std::vector<dto::Rental> GetActiveRentals(int student_id);
+
+    bool RentalInstrumentIsAvailable(std::string instrument_identifier);
+
     bool connected();
+
 };
 
 } // namespace

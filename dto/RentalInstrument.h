@@ -34,7 +34,6 @@ private:
     std::string instrument_type;
     int monthly_fee;
     int max_lease_in_days;
-
 };
 
 }// namespace
