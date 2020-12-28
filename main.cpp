@@ -26,5 +26,17 @@ int main() {
 
     }
 
+//    {
+//        std::cout << "test 3: \n";
+//        controller::Soundgood controller_soundgood{config};
+//        controller_soundgood.RentInstrument(9, "drums1");
+//        std::cout << "success \n";
+//    }
+//    {
+//        std::cout << "test 4: \n";
+//        controller::Soundgood controller_soundgood{config};
+//        controller_soundgood.RentInstrument(100, "recorder2");
+//    }
+
     return 0;
 }

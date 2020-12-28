@@ -13,6 +13,8 @@ private:
 public:
     Soundgood(std::string database_config); // model access
     std::vector<dto::RentalInstrument>FetchAvailableRentalInstruments(std::string instrument_type);
+
+    void RentInstrument(int student_id, const std::string &instrument_identifier);
 };
 
 } // namespace

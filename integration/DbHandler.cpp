@@ -6,8 +6,12 @@ namespace integration{
 DbHandler::DbHandler(const std::string &database_connection_config):
         connection{database_connection_config},
         database_connection_config{database_connection_config} {
+    // initiate the prepared statements
     PrepareRequestAvailableRentalInstrument();
     PrepareGetStudentsActiveRentals();
+    PrepareRentalInstrumentIsAvailable();
+    PrepareStudentIsEnrolled();
+    PrepareSetRentalInstrumentRented();
 }
 
 
@@ -21,7 +25,8 @@ void DbHandler::PrepareRequestAvailableRentalInstrument(){
 std::vector<dto::RentalInstrument> DbHandler::RequestAvailableRentalInstruments(
         const std::string &instrument_type){
     pqxx::work tx{connection};
-    pqxx::result result = tx.exec_prepared("get_available_rental_instruments", instrument_type);
+    pqxx::result result =
+            tx.exec_prepared("get_available_rental_instruments", instrument_type);
 
     std::vector<dto::RentalInstrument> rental_instruments{};
 
@@ -49,7 +54,20 @@ bool DbHandler::connected() {
     return connection.is_open();
 }
 
+void DbHandler::PrepareStudentIsEnrolled(){
+    std::string SQL_STATEMENT = "select enrolled from student where id=$1 limit 1;";
+    connection.prepare("student_enrolled", SQL_STATEMENT);
+}
 
+bool DbHandler::StudentIsEnrolled(int student_id){
+    pqxx::work tx{connection};
+    pqxx::result result = tx.exec_prepared("student_enrolled", student_id);
+    tx.commit();
+    if(result.empty()) return false;
+    pqxx::row row = result[0];
+    bool enrolled = row[0].as<bool>();
+    return enrolled;
+}
 
 void DbHandler::PrepareGetStudentsActiveRentals(){
     const std::string SQL_STATEMENT =
@@ -60,11 +78,6 @@ void DbHandler::PrepareGetStudentsActiveRentals(){
         "    max(r.start_date) as start_date, "
         "    r.return_date, "
         "    instrument_id as instrument_identifier "
-//        "    brand "
-//        "    it.type, "
-//        "    monthly_fee, "
-//        "    max_lease_in_days, "
-//        "    instrument_type_id "
         "from rental_instrument as ri "
         "full join rental as r "
         "on ri.id=r.rental_instrument_id "
@@ -88,6 +101,15 @@ void DbHandler::PrepareGetStudentsActiveRentals(){
     connection.prepare("get_students_active_rentals", SQL_STATEMENT);
 }
 
+int DbHandler::NumberOfActiveRentals(int student_id){
+    pqxx::work tx{connection};
+    pqxx::result result = tx.exec_prepared("get_students_active_rentals", student_id);
+    tx.commit();
+    int count = 0;
+    for(auto row : result) count++;
+    return count;
+}
+
 std::vector<dto::Rental> DbHandler::GetActiveRentals(int student_id) {
     pqxx::work tx{connection};
     pqxx::result result = tx.exec_prepared("get_students_active_rentals", student_id);
@@ -106,18 +128,39 @@ std::vector<dto::Rental> DbHandler::GetActiveRentals(int student_id) {
         };
         rentals.push_back(rental);
     }
+    tx.commit();
     return rentals;
 }
 
 void DbHandler::PrepareRentalInstrumentIsAvailable(){
     const std::string SQL_STATEMENT =
             "select * from available_rental_instruments where instrument_id=$1;";
+    connection.prepare("rental_instrument_is_available", SQL_STATEMENT);
 }
 
-bool DbHandler::RentalInstrumentIsAvailable(std::string instrument_identifier){
-    // select * from available_instruments, if empty throw not avail.
-
-    return 0;
+bool DbHandler::RentalInstrumentIsAvailable(const std::string& instrument_identifier){
+    pqxx::work tx{connection};
+    pqxx::result result =
+            tx.exec_prepared("rental_instrument_is_available", instrument_identifier);
+    tx.commit();
+    if(result.empty()) return false;
+    else return true;
 }
+
+void DbHandler::PrepareSetRentalInstrumentRented(){
+    const std::string SQL_STATEMENT =
+            "INSERT INTO rental\n"
+            "(student_id, rental_instrument_id, start_date)\n"
+            "VALUES\n"
+            "($1, (SELECT id FROM rental_instrument WHERE instrument_id=$2), CURRENT_DATE);";
+    connection.prepare("set_rental_instrument_rented", SQL_STATEMENT);
+}
+
+void DbHandler::SetRentalInstrumentRented(int student_id, const std::string& instrument_id) {
+    pqxx::work tx{connection};
+    tx.exec_prepared("set_rental_instrument_rented", student_id, instrument_id);
+    tx.commit();
+}
+
 
 }

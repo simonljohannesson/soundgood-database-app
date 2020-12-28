@@ -13,6 +13,8 @@ public:
     std::vector<dto::RentalInstrument>RequestAvailableRentalInstruments(
             std::string instrument_type,
             integration::DbHandler& db_handler);
+
+    void RentInstrument(int student_id, const std::string &instrument_id, integration::DbHandler &db_handler);
 };
 
 } // namespace

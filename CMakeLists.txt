@@ -11,7 +11,7 @@ set(PQXX /usr/local/include/pqxx)
 
 
 #add_executable(soundgood main.cpp test/test.cpp test/test.h)
-add_executable(soundgood main.cpp dto/RentalInstrument.cpp dto/RentalInstrument.h dto/Rental.cpp dto/Rental.h dto/StudentPersonDTO.cpp dto/StudentPersonDTO.h integration/DbHandler.cpp integration/DbHandler.h controller/Soundgood.cpp controller/Soundgood.h model/RentalManager.cpp model/RentalManager.h)
+add_executable(soundgood main.cpp dto/RentalInstrument.cpp dto/RentalInstrument.h dto/Rental.cpp dto/Rental.h dto/StudentPersonDTO.cpp dto/StudentPersonDTO.h integration/DbHandler.cpp integration/DbHandler.h controller/Soundgood.cpp controller/Soundgood.h model/RentalManager.cpp model/RentalManager.h model/InstrumentNotAvailableError.h model/NumberAllowedRentalsExceededError.h model/StudentNotEnrolledError.h)
 
 find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
