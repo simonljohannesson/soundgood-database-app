@@ -12,7 +12,7 @@ private:
     std::shared_ptr<integration::DbHandler> db_handler;
     model::RentalManager rental_manager;
 public:
-    Soundgood(const std::string& database_config); // model access
+    explicit Soundgood(const std::string& database_config); // model access
     /**
      * Fetches the rental instruments available for rental.
      *
@@ -66,7 +66,7 @@ public:
      * @param username
      * @return
      */
-    int GetStudentIdFromUsername(std::string username);
+    int GetStudentIdFromUsername(std::string &username);
 };
 
 } // namespace
