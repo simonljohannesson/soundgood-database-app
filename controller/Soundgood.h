@@ -3,12 +3,13 @@
 
 #include "../integration/DbHandler.h"
 #include "../model/RentalManager.h"
+#include <memory>
 
 namespace controller {
 
 class Soundgood {
 private:
-    integration::DbHandler db_handler;
+    std::shared_ptr<integration::DbHandler> db_handler;
     model::RentalManager rental_manager;
 public:
     Soundgood(const std::string& database_config); // model access
@@ -21,7 +22,7 @@ public:
 
     std::vector<dto::ActiveRental> GetActiveRentals(int student_id);
 
-    int GetStudentIdFromUsername(std::string &username);
+    int GetStudentIdFromUsername(std::string username);
 };
 
 } // namespace

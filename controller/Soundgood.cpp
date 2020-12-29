@@ -1,10 +1,9 @@
 #include "Soundgood.h"
-#include "../dto/ActiveRental.h"
 
 namespace controller {
 
-Soundgood::Soundgood(const std::string& database_config): db_handler{database_config} {
-
+Soundgood::Soundgood(const std::string& database_config){
+    db_handler = std::make_shared<integration::DbHandler>(database_config);
 }
 
 std::vector<dto::RentalInstrument> Soundgood::FetchAvailableRentalInstruments(const std::string& instrument_type) {
@@ -24,7 +23,7 @@ std::vector<dto::ActiveRental> Soundgood::GetActiveRentals(int student_id){
     return rental_manager.GetActiveRentals(student_id, db_handler);
 }
 
-int Soundgood::GetStudentIdFromUsername(std::string &username){
+int Soundgood::GetStudentIdFromUsername(std::string username){
     return rental_manager.GetStudentIdFromUsername(username, db_handler);
 }
 

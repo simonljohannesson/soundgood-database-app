@@ -216,11 +216,12 @@ void DbHandler::PrepareGetStudentIdFromUsername(){
             "  s.id as student_id\n"
             "from person as p\n"
             "inner join student s on p.id = s.person_id\n"
-            "where user_name='$1';";
+            "where user_name=$1;";
     connection.prepare("get_student_id_from_username", SQL_STATEMENT);
 }
 
 int DbHandler::GetStudentIdFromUsername(const std::string &username) {
+    std::cout << "username: '" << username << "'\n";
     pqxx::work tx{connection};
     pqxx::result result = tx.exec_prepared("get_student_id_from_username", username);
     tx.commit();
