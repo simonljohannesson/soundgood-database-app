@@ -1,7 +1,6 @@
 #ifndef SOUNDGOOD_VIEWSESSION_H
 #define SOUNDGOOD_VIEWSESSION_H
 
-
 #include <string>
 #include "../controller/Soundgood.h"
 
@@ -27,6 +26,14 @@ public:
     ViewSession(std::string username, std::shared_ptr<controller::Soundgood> controller);
 
     void StartSession();
+
+    void DisplayActiveRentals();
+
+    void DisplayAvailableRentalInstruments();
+
+    void RentInstrument();
+
+    void TerminateRental();
 };
 
 }

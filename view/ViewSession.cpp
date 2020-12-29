@@ -4,7 +4,8 @@
 namespace view{
 
 ViewSession::ViewSession(
-            std::string username, std::shared_ptr<controller::Soundgood> controller):
+            std::string username,
+            std::shared_ptr<controller::Soundgood> controller):
             username{std::move(username)},
             controller{controller}{
     // TODO: throws
@@ -13,32 +14,83 @@ ViewSession::ViewSession(
 }
 
 void ViewSession::StartSession(){
-    // TODO:: WHILE LOOP!!!
-    std::cout << HELP_PROMPT;
-    int input;
-    std::cin >> input;
-    switch (input){
-        case 1:
-            std::cout << HELP_PROMPT;
-            break;
-        case 2:
-            // TODO: DISPLAY ACTIVE RENTALS
-            break;
-        case 3:
-            // TODO: DISPLAY AVAILABLE RENTAL INSTRUMENTS
-            break;
-        case 4:
-            // TODO: RENT INSTRUMENT
-            break;
-        case 5:
-            // TODO: TERMINATE RENTAL
-            break;
-        case 6:
-            // TODO: BREAK WHILE LOOP
-            break;
-        default:
-            std::cout << ERROR_PROMPT;
+    bool loop = true;
+    while (loop){
+        std::cout << HELP_PROMPT;
+        std::string input_str;
+        std::getline(std::cin, input_str);
+        int input = std::atoi(input_str.c_str());
+        switch (input) {
+            case 1:
+                std::cout << HELP_PROMPT;
+                break;
+            case 2:
+                DisplayActiveRentals();
+                break;
+            case 3:
+                DisplayAvailableRentalInstruments();
+                break;
+            case 4:
+                RentInstrument();
+                break;
+            case 5:
+                TerminateRental();
+                break;
+            case 6:
+                loop = false;
+                std::cout << "Logging out\n";
+                break;
+            default:
+                std::cout << ERROR_PROMPT;
+        }
     }
 }
 
+void ViewSession::DisplayActiveRentals(){
+    std::vector<dto::ActiveRental> active_rentals = controller->GetActiveRentals(student_id);
+    std::cout << "ACTIVE RENTALS:\nRental id:\tStart date:\tInstrument id:\tBrand:\tMonthly fee:\n";
+
+    for (auto &active_rental : active_rentals){
+        std::cout << active_rental.getRental().getId() << "\t";
+        std::cout << active_rental.getRental().getStartDate() << "\t";
+        std::cout << active_rental.getRentalInstrument().getInstrumentId() << "\t";
+        std::cout << active_rental.getRentalInstrument().getBrand() << "\t";
+        std::cout << active_rental.getRentalInstrument().getMonthlyFee() << "\n";
+    }
 }
+void ViewSession::DisplayAvailableRentalInstruments(){
+    std::cout << "Enter which instrument type you would like to show.\n";
+    std::string instrument_type;
+    std::getline(std::cin, instrument_type);
+    std::vector<dto::RentalInstrument> rental_instruments =
+            controller->FetchAvailableRentalInstruments(instrument_type);
+
+    std::cout << "AVAILABLE RENTAL INSTRUMENTS:\n";
+    std::cout << "Rental instrument id:\tBrand:\tMonthly fee:\tInstrument type:\n";
+
+    for (auto &rental_instrument : rental_instruments){
+        std::cout << rental_instrument.getInstrumentId() << "\t";
+        std::cout << rental_instrument.getBrand() << "\t";
+        std::cout << rental_instrument.getMonthlyFee() << "\t";
+        std::cout << rental_instrument.getInstrumentType() << "\n";
+    }
+}
+void ViewSession::RentInstrument(){
+    std::cout  << "Enter the rental instrument id of what instrument you would like to rent.\n";
+    std::string instrument_id;
+    std::getline(std::cin, instrument_id);
+
+    controller->RentInstrument(student_id, instrument_id);
+    std::cout << "Successfully rented instrument: " << instrument_id << "\n";
+}
+void ViewSession::TerminateRental(){
+    std::cout << "Enter the id of the rental that you would like to terminate.\n";
+    std::string input;
+    std::getline(std::cin, input);
+    int rental_id = std::atoi(input.c_str());
+
+    controller->TerminateRental(rental_id, student_id);
+    std::cout << "Successfully terminated rental with id: " << rental_id << "\n";
+}
+
+} // namespace

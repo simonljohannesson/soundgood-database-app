@@ -10,21 +10,24 @@ void CommandLineView::StartUserInterface(){
     bool loop = true;
     while(loop){
         std::cout << INITIALIZATION_PROMPT << "\n";
-        int input;
-        std::cin >> input;
-        if (input == 1){
+        std::string input;
+        std::getline(std::cin, input);
+        int input_parsed = std::atoi(input.c_str());
+
+
+        if (input_parsed == 1){
             std::cout << LOGIN_PROMPT << "\n";
             std::string username;
-            std::cin >> username;
-            std::cout << "username: " << username << "\n";
+            std::getline(std::cin, username);
             try{
                 ViewSession view_session{username, soundgood};
                 view_session.StartSession();
             }catch (std::exception &e){ //TODO: correct exception caught...
-                std::cout << e.what();
+                std::cout << "ERROR: ";
+                std::cout << e.what() << "\n";
             }
         }
-        else if (input == 2){
+        else if (input_parsed == 2){
             loop = false;
         }
         else{
