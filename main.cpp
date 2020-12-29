@@ -1,8 +1,10 @@
-#include <iostream>
+#include <memory>
+#include <pqxx/pqxx>
+
 #include "integration/DbHandler.h"
 #include "controller/Soundgood.h"
 #include "view/CommandLineView.h"
-#include <memory>
+#include "integration/DatabaseError.h"
 
 int main() {
     const std::string config =
@@ -12,11 +14,16 @@ int main() {
             "hostaddr=127.0.0.1 "
             "port=5432";
 
-    std::shared_ptr<controller::Soundgood> soundgood
-            = std::make_shared<controller::Soundgood>(config);
+    try {
+        std::shared_ptr<controller::Soundgood> soundgood
+                = std::make_shared<controller::Soundgood>(config);
 
-    view::CommandLineView view{soundgood};
-    view.StartUserInterface();
+        view::CommandLineView view{soundgood};
+        view.StartUserInterface();
+    }catch(std::exception &error){
+        std::cerr << "Unexpected error: " << error.what() << "\n";
+        std::cerr << "Terminating program.\n";
+    }
 
     return 0;
 }

@@ -12,6 +12,13 @@ private:
     std::shared_ptr<integration::DbHandler> db_handler;
     model::RentalManager rental_manager;
 public:
+    /**
+     * Constructor.
+     *
+     * Can throw integration::DatabaseError and pqxx::failure.
+     * 
+     * @param database_config
+     */
     explicit Soundgood(const std::string& database_config); // model access
     /**
      * Fetches the rental instruments available for rental.
