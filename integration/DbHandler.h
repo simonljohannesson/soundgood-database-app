@@ -7,6 +7,7 @@
 
 #include "../dto/RentalInstrument.h"
 #include "../dto/Rental.h"
+#include "../dto/ActiveRental.h"
 
 namespace integration {
 
@@ -24,17 +25,24 @@ private:
     void PrepareRentalInstrumentIsAvailable();
     void PrepareStudentIsEnrolled();
     void PrepareSetRentalInstrumentRented();
+    void PrepareRentalIsActive();
+    void PrepareTerminateRental();
+    void PrepareGetStudentIdFromUsername();
+
 public:
     explicit DbHandler(const std::string & database_connection_config);
     std::vector<dto::RentalInstrument> RequestAvailableRentalInstruments(
             const std::string &instrument_type);
-    std::vector<dto::Rental> GetActiveRentals(int student_id);
+    std::vector<dto::ActiveRental> GetActiveRentals(int student_id);
     bool RentalInstrumentIsAvailable(const std::string& instrument_identifier);
-    bool connected();
     int NumberOfActiveRentals(int student_id);
     bool StudentIsEnrolled(int student_id);
     void SetRentalInstrumentRented(int student_id, const std::string &instrument_id);
+    bool RentalIsActive(int rental_id, int student_id);
+    void TerminateRental(int rental_id);
 
+
+    int GetStudentIdFromUsername(const std::string &username);
 };
 
 } // namespace

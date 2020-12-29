@@ -4,9 +4,9 @@ namespace dto {
 
 RentalInstrument::RentalInstrument(
         int id,
-        std::string&& instrument_id,
-        std::string&& brand,
-        std::string&& instrument_type,
+        std::string instrument_id,
+        std::string brand,
+        std::string instrument_type,
         int monthly_fee,
         int max_lease_in_days):
 
@@ -17,7 +17,6 @@ RentalInstrument::RentalInstrument(
         monthly_fee{monthly_fee},
         max_lease_in_days{max_lease_in_days}
 {};
-
 
 int RentalInstrument::getId() const {
     return id;

@@ -7,13 +7,13 @@ namespace dto {
 
 class RentalInstrument {
 public:
-    RentalInstrument(
-            int id,
-            std::string&& instrument_id,
-            std::string&& brand,
-            std::string&& instrument_type,
-            int monthly_fee,
-            int max_lease_in_days);
+
+    RentalInstrument(int id,
+                     std::string instrument_id,
+                     std::string brand,
+                     std::string instrument_type,
+                     int monthly_fee,
+                     int max_lease_in_days);
 
     int getId() const;
     const std::string &getInstrumentId() const;

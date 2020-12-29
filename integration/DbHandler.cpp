@@ -1,17 +1,23 @@
 #include <iostream>
 #include "DbHandler.h"
+#include "../dto/ActiveRental.h"
+#include "InvalidUsernameError.h"
 
 namespace integration{
 
 DbHandler::DbHandler(const std::string &database_connection_config):
         connection{database_connection_config},
         database_connection_config{database_connection_config} {
+
     // initiate the prepared statements
     PrepareRequestAvailableRentalInstrument();
     PrepareGetStudentsActiveRentals();
     PrepareRentalInstrumentIsAvailable();
     PrepareStudentIsEnrolled();
     PrepareSetRentalInstrumentRented();
+    PrepareRentalIsActive();
+    PrepareTerminateRental();
+    PrepareGetStudentIdFromUsername();
 }
 
 
@@ -50,9 +56,6 @@ std::vector<dto::RentalInstrument> DbHandler::RequestAvailableRentalInstruments(
     tx.commit(); // not needed but good practice to end the transaction
     return rental_instruments;
 }
-bool DbHandler::connected() {
-    return connection.is_open();
-}
 
 void DbHandler::PrepareStudentIsEnrolled(){
     std::string SQL_STATEMENT = "select enrolled from student where id=$1 limit 1;";
@@ -71,32 +74,26 @@ bool DbHandler::StudentIsEnrolled(int student_id){
 
 void DbHandler::PrepareGetStudentsActiveRentals(){
     const std::string SQL_STATEMENT =
-        "select "
-        "    r.id as rental_id, "
-        "    r.student_id, "
-        "    ri.id as rental_instrument_id,"
-        "    max(r.start_date) as start_date, "
-        "    r.return_date, "
-        "    instrument_id as instrument_identifier "
-        "from rental_instrument as ri "
-        "full join rental as r "
-        "on ri.id=r.rental_instrument_id "
-        "inner join instrument_type as it "
-        "on it.id=ri.instrument_type_id "
-        "where r.student_id=$1 "
-        "group by "
-        "    r.id, "
-        "    ri.id, "
-        "    instrument_id, "
-        "    brand, "
-        "    monthly_fee, "
-        "    r.start_date, "
-        "    r.return_date, "
-        "    max_lease_in_days, "
-        "    instrument_type_id, "
-        "    it.type, "
-        "    r.student_id "
-        "having r.return_date IS NULL;";
+        "select\n"
+        "    r.id as rental_id,\n"
+        "    student_id,\n"
+        "    rental_instrument_id,\n"
+        "    start_date,\n"
+        "    return_date,\n"
+        "    instrument_id,\n"
+        "    brand,\n"
+        "    type as instrument_type,\n"
+        "    monthly_fee,\n"
+        "    max_lease_in_days\n"
+        "from rental as r\n"
+        "inner join rental_instrument as ri\n"
+        "on r.rental_instrument_id = ri.id\n"
+        "inner join instrument_type as it\n"
+        "on ri.instrument_type_id = it.id\n"
+        "where\n"
+        "    student_id=$1 AND\n"
+        "    start_date is not null and\n"
+        "    return_date is null;";
     // TODO: can throw pqxx::syntax_error, sql_error
     connection.prepare("get_students_active_rentals", SQL_STATEMENT);
 }
@@ -110,25 +107,46 @@ int DbHandler::NumberOfActiveRentals(int student_id){
     return count;
 }
 
-std::vector<dto::Rental> DbHandler::GetActiveRentals(int student_id) {
+std::vector<dto::ActiveRental> DbHandler::GetActiveRentals(int student_id) {
     pqxx::work tx{connection};
     pqxx::result result = tx.exec_prepared("get_students_active_rentals", student_id);
+    tx.commit();
 
-    std::vector<dto::Rental> rentals;
+    std::vector<dto::ActiveRental> rentals;
 
     if(result.empty()) return rentals;
 
     for(auto row : result){
+
+        int rental_id =                row[0].as<int>();
+        int student_id=               (row[1].is_null() ? -1 : row[1].as<int>());
+        int rental_instrument_id =    (row[2].is_null() ? -1 : row[2].as<int>());
+        std::string start_date =      (row[3].is_null() ? "null" : row[3].as<std::string>());
+        std::string return_date =     (row[4].is_null() ? "null" : row[4].as<std::string>());
+        std::string instrument_id =   (row[5].is_null() ? "null" : row[5].as<std::string>());
+        std::string brand =           (row[6].is_null() ? "null" : row[6].as<std::string>());
+        std::string instrument_type = (row[7].is_null() ? "null" : row[7].as<std::string>());
+        int monthly_fee =             (row[8].is_null() ? -1 : row[8].as<int>());
+        int max_lease_in_days =       (row[9].is_null() ? -1 : row[9].as<int>());
+
         dto::Rental rental {
-            row[0].as<int>(),                                   // rental id
-            (row[1].is_null() ? -1 : row[1].as<int>()),         // student id
-            (row[2].is_null() ? -1 : row[2].as<int>()),         // rental instrument id
-            (row[3].is_null() ? "null" : row[3].as<std::string>()), // start_date
-            (row[4].is_null() ? "null" : row[4].as<std::string>())  // return_date
+            rental_id,
+            student_id,
+            rental_instrument_id,
+            start_date,
+            return_date
         };
-        rentals.push_back(rental);
+        dto::RentalInstrument rental_instrument {
+            rental_instrument_id,
+            instrument_id,
+            brand,
+            instrument_type,
+            monthly_fee,
+            max_lease_in_days
+        };
+        dto::ActiveRental active_rental {rental, rental_instrument};
+        rentals.push_back(active_rental);
     }
-    tx.commit();
     return rentals;
 }
 
@@ -162,5 +180,58 @@ void DbHandler::SetRentalInstrumentRented(int student_id, const std::string& ins
     tx.commit();
 }
 
+void DbHandler::PrepareRentalIsActive(){
+    const std::string SQL_STATEMENT =
+            "select return_date is null as active\n"
+            "from rental where id=$1 and student_id=$2;";
+    connection.prepare("rental_is_active", SQL_STATEMENT);
+}
+bool DbHandler::RentalIsActive(int rental_id, int student_id){
+    pqxx::work tx{connection};
+    pqxx::result result = tx.exec_prepared("rental_is_active", rental_id, student_id);
+    tx.commit();
+    if(result.empty()) return false;
+    pqxx::row row = result[0];
+    bool rental_active = row[0].as<bool>();
+    return rental_active;
+}
+
+void DbHandler::PrepareTerminateRental(){
+    const std::string SQL_STATEMENT =
+            "update rental\n"
+            "set return_date = CURRENT_DATE\n"
+            "where id = $1;";
+    connection.prepare("terminate_rental", SQL_STATEMENT);
+}
+
+void DbHandler::TerminateRental(int rental_id){
+    pqxx::work tx{connection};
+    tx.exec_prepared("terminate_rental", rental_id);
+    tx.commit();
+}
+
+void DbHandler::PrepareGetStudentIdFromUsername(){
+    const std::string SQL_STATEMENT =
+            "select\n"
+            "  s.id as student_id\n"
+            "from person as p\n"
+            "inner join student s on p.id = s.person_id\n"
+            "where user_name='$1';";
+    connection.prepare("get_student_id_from_username", SQL_STATEMENT);
+}
+
+int DbHandler::GetStudentIdFromUsername(const std::string &username) {
+    pqxx::work tx{connection};
+    pqxx::result result = tx.exec_prepared("get_student_id_from_username", username);
+    tx.commit();
+
+    if(result.empty()){
+        throw integration::InvalidUsernameError("Could not find username " + username);
+    }
+
+    pqxx::row row = result[0];
+    int student_id = row[0].as<int>();
+    return student_id;
+}
 
 }

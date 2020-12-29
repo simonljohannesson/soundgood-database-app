@@ -2,6 +2,8 @@
 #include "NumberAllowedRentalsExceededError.h"
 #include "InstrumentNotAvailableError.h"
 #include "StudentNotEnrolledError.h"
+#include "RentalNotActiveError.h"
+#include "../dto/ActiveRental.h"
 
 namespace model{
 
@@ -35,6 +37,33 @@ void RentalManager::RentInstrument(
 
     // prerequisites for renting selected instrument met
     db_handler.SetRentalInstrumentRented(student_id, instrument_id);
+}
+
+void RentalManager::TerminateRental(int rental_id,
+                                   int student_id,
+                                   integration::DbHandler& db_handler){
+     bool rental_active = db_handler.RentalIsActive(rental_id, student_id);
+     if(!rental_active){
+         throw RentalNotActiveError(
+                 "Could not find any active rental with id: "
+                 + std::to_string(rental_id)
+                 + " and student id: "
+                 + std::to_string(student_id));
+     }
+     else{
+         db_handler.TerminateRental(rental_id);
+     }
+}
+
+std::vector<dto::ActiveRental> RentalManager::GetActiveRentals(
+        int student_id,
+        integration::DbHandler &db_handler){
+    return db_handler.GetActiveRentals(student_id);
+}
+
+int RentalManager::GetStudentIdFromUsername(
+        const std::string &username, integration::DbHandler &db_handler){
+    return db_handler.GetStudentIdFromUsername(username);
 }
 
 } // namespace

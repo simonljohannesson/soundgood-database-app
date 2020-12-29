@@ -15,6 +15,12 @@ public:
             integration::DbHandler& db_handler);
 
     void RentInstrument(int student_id, const std::string &instrument_id, integration::DbHandler &db_handler);
+
+    void TerminateRental(int rental_id, int student_id, integration::DbHandler& db_handler);
+
+    std::vector<dto::ActiveRental> GetActiveRentals(int student_id, integration::DbHandler &db_handler);
+
+    int GetStudentIdFromUsername(const std::string &username, integration::DbHandler &db_handler);
 };
 
 } // namespace
