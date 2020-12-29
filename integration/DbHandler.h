@@ -38,6 +38,14 @@ public:
      * @param database_connection_config
      */
     explicit DbHandler(const std::string & database_connection_config);
+    /**
+     * Query database for rental instruments available for rental.
+     *
+     * Can throw integration::DatabaseError.
+     *
+     * @param instrument_type type of instrument to search for
+     * @return vector of rental instruments that are available for rental
+     */
     std::vector<dto::RentalInstrument> RequestAvailableRentalInstruments(
             const std::string &instrument_type);
     /**

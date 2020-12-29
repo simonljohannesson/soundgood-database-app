@@ -10,12 +10,20 @@ namespace model {
 class RentalManager {
 public:
     RentalManager() = default;
-
+    /**
+     * Fetches the rental instruments available for rental.
+     *
+     * Can throw integration::DatabaseError.
+     *
+     * @param instrument_type type of instrument to search for
+     * @param db_handler
+     * @return vector of rental instruments that are available for rental
+     */
     std::vector<dto::RentalInstrument> RequestAvailableRentalInstruments(
             const std::string &instrument_type,
             std::shared_ptr<integration::DbHandler> &db_handler);
     /**
-     * Tries to start a rental for a student with the chosen instrument_id.
+     * Starts a rental for a student with the chosen instrument_id.
      *
      * Can throw:
      * - integration::DatabaseError
@@ -31,7 +39,7 @@ public:
             const std::string &instrument_id,
             std::shared_ptr<integration::DbHandler> &db_handler);
     /**
-     * Checks if a rental is active.
+     * Terminates rental.
      *
      * Can throw:
      * - integration::DatabaseError
@@ -45,7 +53,7 @@ public:
             int student_id,
             std::shared_ptr<integration::DbHandler> &db_handler);
     /**
-     * Query database for all active rentals associated to a student.
+     * Fetch active rentals associated to a student.
      *
      * Can throw integration::DatabaseError.
      *
