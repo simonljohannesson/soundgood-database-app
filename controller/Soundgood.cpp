@@ -22,7 +22,7 @@ std::vector<dto::ActiveRental> Soundgood::GetActiveRentals(int student_id){
     return rental_manager.GetActiveRentals(student_id, db_handler);
 }
 
-int Soundgood::GetStudentIdFromUsername(std::string &username){
+int Soundgood::GetStudentIdFromUsername(const std::string &username){
     return rental_manager.GetStudentIdFromUsername(username, db_handler);
 }
 

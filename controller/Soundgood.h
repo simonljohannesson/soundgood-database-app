@@ -16,7 +16,7 @@ public:
      * Constructor.
      *
      * Can throw integration::DatabaseError and pqxx::failure.
-     * 
+     *
      * @param database_config
      */
     explicit Soundgood(const std::string& database_config); // model access
@@ -73,7 +73,7 @@ public:
      * @param username
      * @return
      */
-    int GetStudentIdFromUsername(std::string &username);
+    int GetStudentIdFromUsername(const std::string &username);
 };
 
 } // namespace
