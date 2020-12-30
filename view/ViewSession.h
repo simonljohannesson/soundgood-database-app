@@ -31,7 +31,8 @@ private:
     const std::string ERROR_PROMPT = "Could not understand that. Try again.\n";
     const std::string DATABASE_ERROR_PROMPT =
             "ERROR: Could not access database. "
-            "Please try again. If the issue persists contact the administrator.";
+            "       Please try again. "
+            "If the issue persists contact the administrator.";
     const std::string STUDENT_NOT_ENROLLED_PROMPT =
             "ERROR: Student is not enrolled.";
     const std::string EXCEEDED_RENTALS_EXCEEDED_PROMPT =

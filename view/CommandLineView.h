@@ -16,17 +16,23 @@ private:
     const std::string LOGIN_PROMPT =
             "Please enter your user id.";
     const std::string LOGIN_ERROR_PROMPT =
-            "Could not log in.";
+            "ERROR: Could not log in with that username.";
+    const std::string INPUT_ERROR_PROMPT =
+            "ERROR: Please try again.";
+    const std::string DATABASE_ERROR_PROMPT =
+            "ERROR: Could not access database. "
+            "       Please try again. "
+            "If the issue persists contact the administrator.";
     std::shared_ptr<controller::Soundgood> soundgood;
 public:
     CommandLineView(std::shared_ptr<controller::Soundgood> controller):
             soundgood(std::move(controller)){};
-
+    /**
+     * Initiate the user interface.
+     */
     void StartUserInterface();
 };
 
 } // namespace
-
-
 
 #endif //SOUNDGOOD_COMMANDLINEVIEW_H
