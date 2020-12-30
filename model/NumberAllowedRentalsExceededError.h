@@ -3,11 +3,13 @@
 
 #include <stdexcept>
 
-class NumberAllowedRentalsExceededError : public std::runtime_error{
+namespace model {
+
+class NumberAllowedRentalsExceededError : public std::runtime_error {
 public:
     // constructor inheritance
     using runtime_error::runtime_error;
 };
-
+}
 
 #endif //SOUNDGOOD_NUMBERALLOWEDRENTALSEXCEEDEDERROR_H

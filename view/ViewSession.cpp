@@ -1,5 +1,9 @@
 #include "ViewSession.h"
-#include "../controller/Soundgood.h"
+#include "../integration/DatabaseError.h"
+#include "../model/StudentNotEnrolledError.h"
+#include "../model/NumberAllowedRentalsExceededError.h"
+#include "../model/InstrumentNotAvailableError.h"
+#include "../model/RentalNotActiveError.h"
 
 namespace view{
 
@@ -8,7 +12,6 @@ ViewSession::ViewSession(
             std::shared_ptr<controller::Soundgood> controller):
             username{std::move(username)},
             controller{controller}{
-    // TODO: throws
     std::cout << "username: '" << this->username << "'\n";
     student_id = controller->GetStudentIdFromUsername(this->username);
 }
@@ -47,50 +50,80 @@ void ViewSession::StartSession(){
 }
 
 void ViewSession::DisplayActiveRentals(){
-    std::vector<dto::ActiveRental> active_rentals = controller->GetActiveRentals(student_id);
-    std::cout << "ACTIVE RENTALS:\nRental id:\tStart date:\tInstrument id:\tBrand:\tMonthly fee:\n";
-
-    for (auto &active_rental : active_rentals){
-        std::cout << active_rental.getRental().getId() << "\t";
-        std::cout << active_rental.getRental().getStartDate() << "\t";
-        std::cout << active_rental.getRentalInstrument().getInstrumentId() << "\t";
-        std::cout << active_rental.getRentalInstrument().getBrand() << "\t";
-        std::cout << active_rental.getRentalInstrument().getMonthlyFee() << "\n";
+    try{
+        std::vector<dto::ActiveRental> active_rentals = controller->GetActiveRentals(student_id);
+        if (!active_rentals.empty()) {
+            std::cout << "ACTIVE RENTALS:\nRental id:\tStart date:\tInstrument id:\tBrand:\tMonthly fee:\n";
+            for (auto &active_rental : active_rentals) {
+                std::cout << active_rental.getRental().getId() << "\t";
+                std::cout << active_rental.getRental().getStartDate() << "\t";
+                std::cout << active_rental.getRentalInstrument().getInstrumentId() << "\t";
+                std::cout << active_rental.getRentalInstrument().getBrand() << "\t";
+                std::cout << active_rental.getRentalInstrument().getMonthlyFee() << "\n";
+            }
+        } else {
+            std::cout << "Could not find any active rentals associated to username: ";
+            std::cout << username << ".\n";
+        }
+    }catch (integration::DatabaseError &error){
+        std::cout << DATABASE_ERROR_PROMPT << "\n";
     }
 }
 void ViewSession::DisplayAvailableRentalInstruments(){
-    std::cout << "Enter which instrument type you would like to show.\n";
-    std::string instrument_type;
-    std::getline(std::cin, instrument_type);
-    std::vector<dto::RentalInstrument> rental_instruments =
-            controller->FetchAvailableRentalInstruments(instrument_type);
-
-    std::cout << "AVAILABLE RENTAL INSTRUMENTS:\n";
-    std::cout << "Rental instrument id:\tBrand:\tMonthly fee:\tInstrument type:\n";
-
-    for (auto &rental_instrument : rental_instruments){
-        std::cout << rental_instrument.getInstrumentId() << "\t";
-        std::cout << rental_instrument.getBrand() << "\t";
-        std::cout << rental_instrument.getMonthlyFee() << "\t";
-        std::cout << rental_instrument.getInstrumentType() << "\n";
+    try{
+        std::cout << "Enter which instrument type you would like to show.\n";
+        std::string instrument_type;
+        std::getline(std::cin, instrument_type);
+        std::vector<dto::RentalInstrument> rental_instruments =
+                controller->FetchAvailableRentalInstruments(instrument_type);
+        if (!rental_instruments.empty()) {
+            std::cout << "AVAILABLE RENTAL INSTRUMENTS:\n";
+            std::cout << "Rental instrument id:\tBrand:\tMonthly fee:\tInstrument type:\n";
+            for (auto &rental_instrument : rental_instruments) {
+                std::cout << rental_instrument.getInstrumentId() << "\t";
+                std::cout << rental_instrument.getBrand() << "\t";
+                std::cout << rental_instrument.getMonthlyFee() << "\t";
+                std::cout << rental_instrument.getInstrumentType() << "\n";
+            }
+        } else {
+            std::cout << "Could not find any available rental instruments.\n";
+        }
+    }catch (integration::DatabaseError &error){
+        std::cout << DATABASE_ERROR_PROMPT << "\n";
     }
 }
 void ViewSession::RentInstrument(){
-    std::cout  << "Enter the rental instrument id of what instrument you would like to rent.\n";
-    std::string instrument_id;
-    std::getline(std::cin, instrument_id);
+    try{
+        std::cout << "Enter the rental instrument id of what instrument you would like to rent.\n";
+        std::string instrument_id;
+        std::getline(std::cin, instrument_id);
 
-    controller->RentInstrument(student_id, instrument_id);
-    std::cout << "Successfully rented instrument: " << instrument_id << "\n";
+        controller->RentInstrument(student_id, instrument_id);
+        std::cout << "Successfully rented instrument: " << instrument_id << "\n";
+    }catch(integration::DatabaseError &error){
+        std::cout << DATABASE_ERROR_PROMPT << "\n";
+    }catch(model::StudentNotEnrolledError &error){
+        std::cout << STUDENT_NOT_ENROLLED_PROMPT << "\n";
+    }catch(model::NumberAllowedRentalsExceededError &error){
+        std::cout << EXCEEDED_RENTALS_EXCEEDED_PROMPT << "\n";
+    }catch(model::InstrumentNotAvailableError &error){
+        std::cout << INSTRUMENT_NOT_AVAILABLE_PROMPT << "\n";
+    }
 }
 void ViewSession::TerminateRental(){
-    std::cout << "Enter the id of the rental that you would like to terminate.\n";
-    std::string input;
-    std::getline(std::cin, input);
-    int rental_id = std::atoi(input.c_str());
+    try{
+        std::cout << "Enter the id of the rental that you would like to terminate.\n";
+        std::string input;
+        std::getline(std::cin, input);
+        int rental_id = std::atoi(input.c_str());
 
-    controller->TerminateRental(rental_id, student_id);
-    std::cout << "Successfully terminated rental with id: " << rental_id << "\n";
+        controller->TerminateRental(rental_id, student_id);
+        std::cout << "Successfully terminated rental with id: " << rental_id << "\n";
+    }catch(integration::DatabaseError &error){
+        std::cout << DATABASE_ERROR_PROMPT << "\n";
+    }catch(model::RentalNotActiveError &error){
+        std::cout << RENTAL_NOT_ACTIVE_PROMPT << "\n";
+    }
 }
 
 } // namespace

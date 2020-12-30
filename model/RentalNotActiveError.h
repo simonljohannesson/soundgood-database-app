@@ -3,10 +3,12 @@
 
 #include <stdexcept>
 
-class RentalNotActiveError : public std::runtime_error{
+namespace model {
+
+class RentalNotActiveError : public std::runtime_error {
 public:
     using runtime_error::runtime_error;
 };
-
+}
 
 #endif //SOUNDGOOD_RENTALNOTACTIVEERROR_H
