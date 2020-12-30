@@ -12,7 +12,6 @@ ViewSession::ViewSession(
             std::shared_ptr<controller::Soundgood> controller):
             username{std::move(username)},
             controller{controller}{
-    std::cout << "username: '" << this->username << "'\n";
     student_id = controller->GetStudentIdFromUsername(this->username);
 }
 

@@ -265,7 +265,6 @@ void DbHandler::PrepareGetStudentIdFromUsername(){
 
 int DbHandler::GetStudentIdFromUsername(const std::string &username) {
     try{
-        std::cout << "username: '" << username << "'\n";
         pqxx::work tx{connection};
         pqxx::result result = tx.exec_prepared("get_student_id_from_username", username);
         tx.commit();
