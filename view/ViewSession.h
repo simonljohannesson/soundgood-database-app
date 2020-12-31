@@ -19,15 +19,15 @@ private:
     int student_id;
     std::shared_ptr<controller::Soundgood> controller;
     const std::string HELP_PROMPT =
-            " What would you like to do? Insert the number next to \n"
-            " the corresponding task that you would like to perform.\n"
-            " \n"
-            "  1   Display which tasks can be performed. (Display this message again.)\n"
-            "  2   Display a student's active rentals.\n"
-            "  3   Display all instruments that are available for rental.\n"
-            "  4   Rent an instrument.\n"
-            "  5   Terminate a rental.\n"
-            "  6   Log out.\n";
+            "\n* What would you like to do? Insert the number next to \n"
+            "* the corresponding task that you would like to perform.\n"
+            "* \n"
+            "*  1   Display which tasks can be performed. (Display this message again.)\n"
+            "*  2   Display a student's active rentals.\n"
+            "*  3   Display all instruments that are available for rental.\n"
+            "*  4   Rent an instrument.\n"
+            "*  5   Terminate a rental.\n"
+            "*  6   Log out.\n";
     const std::string ERROR_PROMPT = "Could not understand that. Try again.\n";
     const std::string DATABASE_ERROR_PROMPT =
             "ERROR: Could not access database. "
