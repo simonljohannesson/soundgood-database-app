@@ -1,38 +1,41 @@
 #include "StudentPersonDTO.h"
 
+#include <utility>
+
 namespace dto {
 
 StudentPersonDTO::StudentPersonDTO(
-        int personId,
-        std::string personNumber,
-        std::string firstName,
+        int person_id,
+        std::string person_number,
+        std::string first_name,
         std::string surname,
         std::string street,
-        std::string zipCode,
+        std::string zip_code,
         std::string city,
-        std::string phoneNumber,
+        std::string phone_number,
         std::string email,
-        int studentId, const std::string &userName,
+        int student_id,
+        std::string user_name,
         bool enrolled,
-        bool shouldSaveApplication,
-        int schoolId,
-        const std::string &dateEnrolled)
+        bool should_save_application,
+        int school_id,
+        std::string date_enrolled)
         :
-        person_id(personId),
-        person_number(std::move(personNumber)),
-        first_name(std::move(firstName)),
+        person_id(person_id),
+        person_number(std::move(person_number)),
+        first_name(std::move(first_name)),
         surname(std::move(surname)),
         street(std::move(street)),
-        zip_code(std::move(zipCode)),
+        zip_code(std::move(zip_code)),
         city(std::move(city)),
-        phone_number(std::move(phoneNumber)),
+        phone_number(std::move(phone_number)),
         email(std::move(email)),
-        student_id(studentId),
-        user_name(userName),
+        student_id(student_id),
+        user_name(std::move(user_name)),
         enrolled(enrolled),
-        should_save_application(shouldSaveApplication),
-        school_id(schoolId),
-        date_enrolled(dateEnrolled) {}
+        should_save_application(should_save_application),
+        school_id(school_id),
+        date_enrolled(std::move(date_enrolled)) {}
 
 int StudentPersonDTO::getPersonId() const {
     return person_id;

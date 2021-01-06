@@ -24,20 +24,20 @@ private:
     std::string date_enrolled;
 public:
     StudentPersonDTO(
-            int personId,
-            std::string personNumber,
-            std::string firstName,
+            int person_id,
+            std::string person_number,
+            std::string first_name,
             std::string surname,
             std::string street,
-            std::string zipCode,
+            std::string zip_code,
             std::string city,
-            std::string phoneNumber,
+            std::string phone_number,
             std::string email,
-            int studentId, const std::string &userName,
+            int student_id, std::string user_name,
             bool enrolled,
-            bool shouldSaveApplication,
-            int schoolId,
-            const std::string &dateEnrolled);
+            bool should_save_application,
+            int school_id,
+            std::string date_enrolled);
 
     int getPersonId() const;
 

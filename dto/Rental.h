@@ -9,10 +9,10 @@ namespace dto {
 class Rental {
 public:
     Rental(int id,
-           int studentId,
-           int rentalInstrumentId,
-           std::string startDate,
-           std::string returnDate);
+           int student_id,
+           int rental_instrumentId,
+           std::string start_date,
+           std::string return_date);
 
     int id;
     int getId() const;

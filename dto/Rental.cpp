@@ -6,15 +6,15 @@ namespace dto {
 
 Rental::Rental(
         int id,
-        int studentId,
-        int rentalInstrumentId,
-        std::string startDate,
-        std::string returnDate) :
+        int student_id,
+        int rental_instrumentId,
+        std::string start_date,
+        std::string return_date) :
         id(id),
-        student_id(studentId),
-        rental_instrument_id(rentalInstrumentId),
-        start_date(std::move(startDate)),
-        return_date(std::move(returnDate)) {}
+        student_id(student_id),
+        rental_instrument_id(rental_instrumentId),
+        start_date(std::move(start_date)),
+        return_date(std::move(return_date)) {}
 
 
 int Rental::getId() const {
