@@ -43,6 +43,7 @@ std::ostream &operator<<(std::ostream &strm, const Rental &obj){
     strm << "rental_instrument_id: "    << obj.rental_instrument_id << "\t";
     strm << "start_date: "              << obj.start_date << "\t";
     strm << "return_date: "             << obj.return_date << "\t";
+    return strm;
 }
 
 } // namespace
