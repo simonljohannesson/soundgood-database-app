@@ -510,7 +510,7 @@ INSERT INTO rental
     student_id,
     rental_instrument_id,
     start_date,
-    end_date
+    return_date
 )
 VALUES
 (
