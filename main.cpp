@@ -10,8 +10,9 @@ int main() {
     const std::string config =
             "dbname=soundgood "
             "user=postgres "
-            "password=password "
+            "password=example "
             "hostaddr=127.0.0.1 "
+//            "hostaddr=172.17.0.2 " // Authors docker container IP
             "port=5432";
 
     try {
