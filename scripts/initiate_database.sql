@@ -1,4 +1,4 @@
-CREATE DATABASE soundgood;
+--CREATE DATABASE soundgood;
 
 --\c soundgood
 
