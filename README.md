@@ -11,6 +11,12 @@ The scripts created in the project tasks can be found in the directory `scripts`
 - `scripts/populate_database_with_test_data.sql` is the script used to insert test data.
 - The other tasks are handled in the project report.
 
+It's possible that I have worked a bit more on the project after the hand-in at the point
+of the evaluation, so in order to not evaluate anything that was written after the deadline
+make sure to check the commit with the tag `hand-in-iv1351-done`. I will try to not commit
+anything to master during the evaluation period but it can be hard to know exactly when 
+that is so hopefully the tag will help with that.
+
 ## Application
 The application is written in C++ for a Linux environment that has the 
 [jtv/libpqxx](https://github.com/jtv/libpqxx)
