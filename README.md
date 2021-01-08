@@ -55,7 +55,7 @@ of the below instructions.
    \i host_files/add_database_views.sql
    \i host_files/populate_database_with_test_data.sql`. To skip the import of testdata
    simply omit the last part `\i host_files/populate_database_with_test_data.sql`.
-8. Build and run the project.
+8. Build and run the project in an environment where libqxx is successfully installed.
 
 ### Setting up the database and application without docker
 1. Install `postgres` in the appropriate way for your Linux distribution including
